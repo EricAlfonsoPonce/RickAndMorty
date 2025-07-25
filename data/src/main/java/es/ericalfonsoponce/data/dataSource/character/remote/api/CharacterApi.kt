@@ -6,7 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface CharacterApi {
-
     @GET("character/")
     suspend fun getCharacterByPage(
         @Query("page") page: Int
