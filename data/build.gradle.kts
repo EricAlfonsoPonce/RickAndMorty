@@ -60,4 +60,7 @@ dependencies {
     // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+
+    // Module
+    implementation(project(":domain"))
 }
