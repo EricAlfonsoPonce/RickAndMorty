@@ -31,7 +31,6 @@ class ApiHandler {
             is HttpException -> {
                 parseError(error.response()?.errorBody())
             }
-
             is SocketTimeoutException -> NetworkError.Timeout
             is IOException -> NetworkError.NoInternet
             is NetworkError -> error

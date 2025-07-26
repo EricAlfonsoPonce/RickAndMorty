@@ -11,4 +11,3 @@ data class CharacterDto(
     val location: CharacterLocationDto,
     val image: String
 )
-
