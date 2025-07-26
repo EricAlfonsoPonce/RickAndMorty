@@ -9,8 +9,9 @@ import retrofit2.Response
 import java.io.IOException
 import java.lang.reflect.Type
 import java.net.SocketTimeoutException
+import javax.inject.Inject
 
-class ApiHandler {
+class ApiHandler @Inject constructor() {
     suspend fun <T> load(call: suspend () -> Response<T>): Result<T> {
         return try {
             val response = call()

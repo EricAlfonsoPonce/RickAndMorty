@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="appBackground">#000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    // Shimmer
+    <color name="shimmer">#E9E9E9</color>
+
+    // Loader
+    <color name="loader">#FF42A5F5</color>
+
+    // Character
+    <color name="alive">#FF4CAF50</color>
+    <color name="dead">#FFF44336</color>
+    <color name="unknown">#FF9E9E9E</color>
+</resources>
