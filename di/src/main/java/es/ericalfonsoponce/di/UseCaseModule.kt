@@ -16,6 +16,6 @@ object UseCaseModule {
     @Singleton
     fun providesCharacterUseCase(
         characterRepository: CharacterRepository
-    ): CharacterUseCase = CharacterUseCaseImpl(characterRepository)
+    ): CharacterUseCase = CharacterUseCaseImpl(characterRepository = characterRepository)
 
 }
