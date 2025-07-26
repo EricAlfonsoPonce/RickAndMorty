@@ -1,22 +1,45 @@
 package es.ericalfonsoponce.presentation.xml.home
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import es.ericalfonsoponce.domain.entity.character.CharacterShow
 import es.ericalfonsoponce.presentation.xml.R
+import es.ericalfonsoponce.presentation.xml.character.CharacterDetailActivity
 import es.ericalfonsoponce.presentation.xml.databinding.ActivityHomeBinding
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
     private var binding: ActivityHomeBinding? = null
     private lateinit var characterAdapter: CharacterAdapter
     private val viewModel: HomeViewModel by viewModels()
+
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.extras?.let { extras ->
+                    val characterUpdated =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                            extras.getSerializable("Character", CharacterShow::class.java)
+                        else extras.getSerializable("Character") as? CharacterShow
+
+                    val currentList = characterAdapter.currentList
+                    val position = currentList.indexOfFirst { it?.id == characterUpdated?.id }
+                    if (position != -1) {
+                        val newList = currentList.toMutableList().apply {
+                            set(position, characterUpdated)
+                        }
+                        characterAdapter.submitList(newList)
+                    }
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,59 +57,46 @@ class HomeActivity : AppCompatActivity() {
     private fun initAdapters() {
         characterAdapter = CharacterAdapter(
             onClick = {
-
+                launcher.launch(
+                    Intent(this, CharacterDetailActivity::class.java)
+                        .putExtra("Character", it)
+                )
             },
             onDelete = {
 
             },
             loadNextPage = {
-                viewModel.getCharacters(isLoadingPagination = true)
+                viewModel.loadNextPage()
             }
         )
         binding?.recyclerCharacter?.adapter = characterAdapter
     }
 
-    private fun initListeners(){
+    private fun initListeners() {
         binding?.swipeRefresh?.setOnRefreshListener {
             viewModel.refreshData()
         }
     }
 
     private fun initObservers() {
-        binding?.appBar?.addOnOffsetChangedListener { _, verticalOffset ->
-            binding?.swipeRefresh?.isEnabled = verticalOffset == 0
+        viewModel.characters.observe(this) {
+            characterAdapter.submitList(it)
         }
 
-        lifecycleScope.launch {
-            viewModel.uiState.map { it.characters }
-                .distinctUntilChanged()
-                .collect { characters ->
-                    characterAdapter.submitList(characters)
-                }
+        viewModel.isLoading.observe(this) {
+            if (it) {
+                loadShimmerLayout()
+            } else {
+                stopShimmerLayout()
+            }
         }
 
-        lifecycleScope.launch {
-            viewModel.uiState.map { it.isLoading }
-                .distinctUntilChanged()
-                .collect { isLoading ->
-                    if (isLoading) {
-                        loadShimmerLayout()
-                    } else {
-                        stopShimmerLayout()
-                    }
-                }
-        }
-
-        lifecycleScope.launch {
-            viewModel.uiState.map { it.isLoadingPagination }
-                .distinctUntilChanged()
-                .collect { isLoading ->
-                    if (isLoading) {
-                        characterAdapter.showLoader()
-                    } else {
-                        characterAdapter.finishPaginationLoader()
-                    }
-                }
+        viewModel.isLoadingPagination.observe(this) {
+            if (it) {
+                characterAdapter.showLoader()
+            } else {
+                characterAdapter.finishPaginationLoader()
+            }
         }
     }
 
@@ -95,7 +105,7 @@ class HomeActivity : AppCompatActivity() {
             binding?.switcherLoaderCharacter?.showNext()
             binding?.shimmerCharacter?.startShimmer()
         }
-        binding?.swipeRefresh?.isEnabled = false
+        binding?.swipeRefresh?.isRefreshing = true
     }
 
     private fun stopShimmerLayout() {
@@ -103,6 +113,6 @@ class HomeActivity : AppCompatActivity() {
             binding?.switcherLoaderCharacter?.showPrevious()
             binding?.shimmerCharacter?.stopShimmer()
         }
-        binding?.swipeRefresh?.isEnabled = true
+        binding?.swipeRefresh?.isRefreshing = false
     }
 }

@@ -15,9 +15,7 @@ class CharacterRepositoryImpl @Inject constructor(
     private val errorRemoteHandler: ErrorHandler
 ) : CharacterRepository {
     override suspend fun getCharactersByPage(page: Int): Result<Pair<Boolean, List<CharacterShow>>> {
-        val response = dataSource.getCharactersByPage(page)
-
-        return response.fold(
+        return dataSource.getCharactersByPage(page).fold(
             onSuccess = { characterResponse ->
                 Result.success(
                     Pair(
@@ -25,8 +23,8 @@ class CharacterRepositoryImpl @Inject constructor(
                         characterResponse.results.map { it.toDomain() })
                 )
             },
-            onFailure = { exception ->
-                val error = if (exception is Exception) errorRemoteHandler.handle(exception) else AppError.Unknown
+            onFailure = { throwable ->
+                val error = if (throwable is Exception) errorRemoteHandler.handle(throwable) else AppError.Unknown
                 Result.failure(error)
             }
         )
@@ -37,7 +35,6 @@ class CharacterRepositoryImpl @Inject constructor(
         name = name,
         status = CharacterStatus.entries.firstOrNull { it.value == status } ?: CharacterStatus.UNKNOWN,
         species = species,
-        type = type,
         gender = CharacterGender.entries.firstOrNull { it.value == gender } ?: CharacterGender.UNKNOWN,
         origin = origin.name,
         location = location.name,

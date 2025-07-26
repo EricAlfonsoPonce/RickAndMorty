@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="activity"
+            type="es.ericalfonsoponce.presentation.xml.character.CharacterDetailActivity" />
+
+        <variable
+            name="viewModel"
+            type="es.ericalfonsoponce.presentation.xml.character.CharacterDetailViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/appBackground"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="20dp"
+            android:contentDescription="@null"
+            android:onClick="@{() -> activity.closeActivity()}"
+            android:src="@drawable/ic_close"
+            android:tintMode="@color/white" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/image_character"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/white"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.RoundedCorners"
+                    tools:src="@tools:sample/avatars" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/CustomInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:hint="@string/character_hint_name"
+                    android:layout_marginTop="32dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_name_character"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:text="@{viewModel.character.name}"
+                        tools:text="Rick Sanchez"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+                <!-- GENDER -->
+                <Spinner
+                    android:id="@+id/spinner_gender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="@color/white"
+                    android:padding="8dp" />
+
+                <!-- SPECIE -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/CustomInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:text="@string/character_hint_specie"
+                    android:textColorHint="@color/appBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_specie_character"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:text="@{viewModel.character.species}"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Spinner
+                    android:id="@+id/spinner_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="@color/white"
+                    android:padding="8dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/CustomInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:text="@string/character_hint_origin"
+                    android:textColorHint="@color/appBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:maxLines="1"
+                        android:text="@{viewModel.character.origin}"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/CustomInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="16dp"
+                    android:background="@color/white"
+                    android:text="@string/character_hint_location"
+                    android:textColorHint="@color/appBackground">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:maxLines="1"
+                        android:text="@{viewModel.character.location}"
+                        tools:text="City of Preview" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/saveButtonColor"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:onClick="@{() -> viewModel.saveChanges()}"
+            android:text="@string/character_save_changes_button" />
+    </LinearLayout>
+</layout>

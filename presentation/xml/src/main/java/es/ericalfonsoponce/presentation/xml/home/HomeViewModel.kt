@@ -1,29 +1,31 @@
 package es.ericalfonsoponce.presentation.xml.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.ericalfonsoponce.domain.entity.character.CharacterShow
+import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.domain.useCase.character.CharacterUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class CharacterUiState(
-    val characters: List<CharacterShow> = emptyList(),
-    val isLoading: Boolean = false,
-    val isLoadingPagination: Boolean = false,
-)
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val characterUseCase: CharacterUseCase
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(CharacterUiState())
-    val uiState: StateFlow<CharacterUiState> = _uiState.asStateFlow()
+    private val _characters = MutableLiveData<List<CharacterShow>>(emptyList())
+    val characters: LiveData<List<CharacterShow>> = _characters
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _isLoadingPagination = MutableLiveData<Boolean>()
+    val isLoadingPagination: LiveData<Boolean> = _isLoadingPagination
+
+    private val _error = MutableLiveData<AppError>()
+    val error: LiveData<AppError> = _error
 
     private var page: Int = 1
     private var hasNextPage: Boolean = true
@@ -35,26 +37,31 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { pairResult ->
                     hasNextPage = pairResult.first
                     if (pairResult.first) page++
-                    _uiState.update { it.copy(characters = it.characters + pairResult.second) }
+                    _characters.value =
+                        _characters.value?.toMutableList()?.plus(pairResult.second)
                 }
-                .onFailure {
-
+                .onFailure { throwable ->
+                    _error.value = throwable as AppError
                 }
             if (isLoadingPagination.not()) setIsLoading(false) else setIsLoadingPagination(false)
         }
     }
 
-    fun refreshData(){
+    fun loadNextPage() {
+        if (hasNextPage) getCharacters(true)
+    }
+
+    fun refreshData() {
         page = 1
-        _uiState.update { it.copy(characters = emptyList()) }
+        _characters.value = emptyList()
         getCharacters()
     }
 
     private fun setIsLoading(isLoading: Boolean) {
-        _uiState.update { it.copy(isLoading = isLoading) }
+        _isLoading.value = isLoading
     }
 
     private fun setIsLoadingPagination(isLoading: Boolean) {
-        _uiState.update { it.copy(isLoadingPagination = isLoading) }
+        _isLoadingPagination.value = isLoading
     }
 }

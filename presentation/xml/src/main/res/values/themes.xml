@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.RickAndMorty" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- IMAGE STYLES -->
+    <style name="ShapeAppearanceOverlay.App.RoundedCorners" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- TEXT INPUT STYLES -->
+    <style name="CustomInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="boxStrokeColor">@color/textInputColor</item>
+        <item name="hintTextColor">@color/textInputColor</item>
+        <item name="helperTextTextColor">@color/textInputColor</item>
+        <item name="android:textColorHint">@color/textInputColor</item>
+        <item name="android:layout_marginHorizontal">8dp</item>
+    </style>
+
+    <style name="CustomInputText">
+        <item name="android:textColor">@color/textInputColor</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+</resources>

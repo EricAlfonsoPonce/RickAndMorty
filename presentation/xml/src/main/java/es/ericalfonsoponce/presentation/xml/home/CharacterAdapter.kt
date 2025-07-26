@@ -63,11 +63,11 @@ class CharacterAdapter(
 
         fun bind(character: CharacterShow) {
             with(binding) {
+                this.character = character
                 Glide.with(root)
                     .load(character.image)
                     .into(imageCharacter)
 
-                textNameCharacter.text = character.name
                 textStatusPlace.text = getCharacterStatusColored(character)
 
                 Glide.with(root)
