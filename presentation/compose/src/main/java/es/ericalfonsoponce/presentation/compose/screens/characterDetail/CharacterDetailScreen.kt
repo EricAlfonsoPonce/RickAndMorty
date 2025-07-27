@@ -90,8 +90,9 @@ private fun CharacterDetailScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(appBackgroundColor)
-                .padding(horizontal = 16.dp, vertical = 20.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             AsyncImage(
