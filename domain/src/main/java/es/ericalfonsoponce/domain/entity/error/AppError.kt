@@ -5,4 +5,5 @@ sealed class AppError: Exception() {
     object NoInternet : AppError()
     object Unknown : AppError()
     object EmptyBody : AppError()
+    object SqlError : AppError()
 }

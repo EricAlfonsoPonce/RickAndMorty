@@ -11,12 +11,12 @@
     </style>
 
     <!-- TEXT INPUT STYLES -->
-    <style name="CustomInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxBackgroundColor">@color/white</item>
-        <item name="boxStrokeColor">@color/textInputColor</item>
-        <item name="hintTextColor">@color/textInputColor</item>
-        <item name="helperTextTextColor">@color/textInputColor</item>
-        <item name="android:textColorHint">@color/textInputColor</item>
+    <style name="CustomInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/appBackground</item>
+        <item name="boxStrokeColor">@color/input_stroke_selector</item>
+        <item name="hintTextColor">@color/white</item>
+        <item name="helperTextTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
         <item name="android:layout_marginHorizontal">8dp</item>
     </style>
 

@@ -9,6 +9,14 @@
     <string name="character_hint_status">Status</string>
     <string name="character_hint_specie">Specie</string>
 
-    <string name="character_save_changes_button">Save Changes</string>
+    <!-- Dialog -->
+    <string name="default_dialog_button">Accept</string>
+    <string name="default_dialog_title">Error!</string>
+    <string name="default_dialog_message">Something went wrong</string>
 
+    <!-- Errors -->
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_sql">SQL Error</string>
+
+    <string name="character_save_changes_button">Save Changes</string>
 </resources>

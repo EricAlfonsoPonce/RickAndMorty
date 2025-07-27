@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="activity"
             type="es.ericalfonsoponce.presentation.xml.characterDetail.CharacterDetailActivity" />
@@ -16,8 +17,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         android:background="@color/appBackground"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <ImageView
@@ -53,9 +54,8 @@
                     style="@style/CustomInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:hint="@string/character_hint_name"
-                    android:layout_marginTop="32dp">
+                    android:layout_marginTop="32dp"
+                    android:hint="@string/character_hint_name">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edit_name_character"
@@ -63,25 +63,22 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@{viewModel.character.name}"
-                        tools:text="Rick Sanchez"
-                        />
+                        tools:text="Rick Sanchez" />
                 </com.google.android.material.textfield.TextInputLayout>
-                <!-- GENDER -->
+
                 <Spinner
                     android:id="@+id/spinner_gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
                     android:layout_marginVertical="16dp"
-                    android:background="@color/white"
+                    android:background="@drawable/background_spinner"
                     android:padding="8dp" />
 
-                <!-- SPECIE -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/CustomInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
                     android:text="@string/character_hint_specie"
                     android:textColorHint="@color/appBackground">
 
@@ -90,8 +87,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
-                        android:text="@{viewModel.character.species}"
-                        />
+                        android:text="@{viewModel.character.species}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Spinner
@@ -100,14 +96,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
                     android:layout_marginVertical="16dp"
-                    android:background="@color/white"
+                    android:background="@drawable/background_spinner"
                     android:padding="8dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/CustomInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
                     android:text="@string/character_hint_origin"
                     android:textColorHint="@color/appBackground">
 
@@ -116,8 +111,7 @@
                         android:layout_height="wrap_content"
                         android:enabled="false"
                         android:maxLines="1"
-                        android:text="@{viewModel.character.origin}"
-                        />
+                        android:text="@{viewModel.character.origin}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -125,7 +119,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="16dp"
-                    android:background="@color/white"
                     android:text="@string/character_hint_location"
                     android:textColorHint="@color/appBackground">
 
@@ -143,10 +136,10 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/saveButtonColor"
-            android:textStyle="bold"
-            android:textAllCaps="false"
+            android:backgroundTint="@color/saveButtonColor"
             android:onClick="@{() -> viewModel.saveChanges()}"
-            android:text="@string/character_save_changes_button" />
+            android:text="@string/character_save_changes_button"
+            android:textAllCaps="false"
+            android:textStyle="bold" />
     </LinearLayout>
 </layout>

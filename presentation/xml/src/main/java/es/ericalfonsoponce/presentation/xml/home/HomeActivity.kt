@@ -8,10 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import dagger.hilt.android.AndroidEntryPoint
 import es.ericalfonsoponce.domain.entity.character.CharacterShow
+import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.presentation.xml.R
 import es.ericalfonsoponce.presentation.xml.characterDetail.CharacterDetailActivity
+import es.ericalfonsoponce.presentation.xml.components.showSimpleDialog
 import es.ericalfonsoponce.presentation.xml.databinding.ActivityHomeBinding
 
 @AndroidEntryPoint
@@ -26,7 +29,10 @@ class HomeActivity : AppCompatActivity() {
                 result.data?.extras?.let { extras ->
                     val characterUpdated =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                            extras.getSerializable(CharacterDetailActivity.INTENT_CHARACTER, CharacterShow::class.java)
+                            extras.getSerializable(
+                                CharacterDetailActivity.INTENT_CHARACTER,
+                                CharacterShow::class.java
+                            )
                         else extras.getSerializable(CharacterDetailActivity.INTENT_CHARACTER) as? CharacterShow
 
                     val currentList = characterAdapter.currentList
@@ -46,7 +52,16 @@ class HomeActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
+
+        binding?.let {
+            WindowInsetsControllerCompat(window, it.root).apply {
+                isAppearanceLightStatusBars = false
+                isAppearanceLightNavigationBars = false
+            }
+        }
+
         setContentView(binding?.root)
+
 
         initAdapters()
         initListeners()
@@ -97,6 +112,22 @@ class HomeActivity : AppCompatActivity() {
             } else {
                 characterAdapter.finishPaginationLoader()
             }
+        }
+
+        viewModel.error.observe(this) { error ->
+            val message = when(error){
+                is AppError.NoInternet -> getString(R.string.error_no_internet)
+                is AppError.Failure -> error.msg
+                is AppError.SqlError -> getString(R.string.error_sql)
+                else -> getString(R.string.default_dialog_message)
+            }
+
+            showSimpleDialog(
+                context = this,
+                title = getString(R.string.default_dialog_title),
+                message = message,
+                buttonText = getString(R.string.default_dialog_button)
+            )
         }
     }
 
