@@ -5,7 +5,7 @@
 
     <application>
         <activity
-            android:name=".character.CharacterDetailActivity"
+            android:name=".characterDetail.CharacterDetailActivity"
             android:exported="false" />
         <activity
             android:name=".home.HomeActivity"

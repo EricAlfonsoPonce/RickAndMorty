@@ -7,11 +7,11 @@
 
         <variable
             name="activity"
-            type="es.ericalfonsoponce.presentation.xml.character.CharacterDetailActivity" />
+            type="es.ericalfonsoponce.presentation.xml.characterDetail.CharacterDetailActivity" />
 
         <variable
             name="viewModel"
-            type="es.ericalfonsoponce.presentation.xml.character.CharacterDetailViewModel" />
+            type="es.ericalfonsoponce.presentation.xml.characterDetail.CharacterDetailViewModel" />
     </data>
 
     <LinearLayout

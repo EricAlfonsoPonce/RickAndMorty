@@ -32,13 +32,14 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // TEST
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.mockk)
 
     // Hilt
     implementation(libs.hilt.android)

@@ -14,7 +14,7 @@ interface CharacterDao {
     @Query("SELECT * FROM character WHERE id >= :id ORDER BY id ASC")
     suspend fun getAllCharacters(id: Int): List<CharacterDbo>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCharacter(character: CharacterDbo): Long
 
     @Update

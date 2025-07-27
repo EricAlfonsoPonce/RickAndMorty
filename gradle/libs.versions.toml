@@ -1,14 +1,17 @@
 [versions]
 agp = "8.11.1"
 glideVersion = "4.16.0"
+junitJupiterApi = "5.13.4"
 kotlin = "2.2.0"
 coreKtx = "1.16.0"
 gson = "2.13.1"
+kotlinTestJunit = "2.2.0"
+kotlinxCoroutinesTest = "1.10.2"
 ksp = "2.2.0-2.0.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 loggingInterceptor = "5.1.0"
-roomCommon = "2.7.2"
+mockk = "1.14.5"
 roomKtx = "2.7.2"
 retrofit = "3.0.0"
 hilt = "2.57"
@@ -23,6 +26,7 @@ swiperefreshlayout = "1.1.0"
 shimmer = "0.5.0"
 lifecycleRuntimeKtx = "2.9.2"
 androidx-lifecycle-viewmodel-ktx = "2.9.2"
+turbine = "1.2.1"
 
 [libraries]
 # Common
@@ -67,8 +71,14 @@ room-androidx-compiler = { group = "androidx.room", name = "room-compiler", vers
 
 # Test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitJupiterApi" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlinTestJunit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+androidx-lifecycle-runtime-testing = { module = "androidx.lifecycle:lifecycle-runtime-testing", version.ref = "lifecycleRuntimeKtx" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,4 +1,4 @@
-package es.ericalfonsoponce.presentation.xml.character
+package es.ericalfonsoponce.presentation.xml.characterDetail
 
 import android.os.Build
 import android.os.Bundle

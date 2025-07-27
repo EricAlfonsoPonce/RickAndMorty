@@ -3,6 +3,7 @@ package es.ericalfonsoponce.data.dataSource.handler.local
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteException
 import es.ericalfonsoponce.data.dataSource.handler.local.dbo.DataBaseError
+import java.sql.SQLException
 import javax.inject.Inject
 
 class DataBaseHandler @Inject constructor() {

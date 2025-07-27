@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import es.ericalfonsoponce.domain.entity.character.CharacterShow
 import es.ericalfonsoponce.presentation.xml.R
-import es.ericalfonsoponce.presentation.xml.character.CharacterDetailActivity
+import es.ericalfonsoponce.presentation.xml.characterDetail.CharacterDetailActivity
 import es.ericalfonsoponce.presentation.xml.databinding.ActivityHomeBinding
 
 @AndroidEntryPoint

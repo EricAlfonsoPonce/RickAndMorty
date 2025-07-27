@@ -50,8 +50,10 @@ dependencies {
     ksp(libs.room.androidx.compiler)
 
     // Test
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.mockk)
+
 
     // Module
     implementation(project(":domain"))
