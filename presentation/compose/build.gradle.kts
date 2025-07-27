@@ -54,12 +54,13 @@ dependencies {
     // Coil Compose
     implementation(libs.coil.compose)
 
-    //Test
+    // Test
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation (libs.androidx.lifecycle.runtime.testing)
 
     // Serialization
     implementation(libs.kotlinx.serialization.json)
