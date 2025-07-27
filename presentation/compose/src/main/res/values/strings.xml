@@ -10,5 +10,10 @@
     <string name="character_hint_status">Status</string>
     <string name="character_hint_specie">Specie</string>
 
+    <!-- Dialog -->
+    <string name="default_dialog_button">Accept</string>
+    <string name="default_dialog_title">Error!</string>
+    <string name="default_dialog_message">Something went wrong</string>
+
     <string name="character_save_changes_button">Save Changes</string>
 </resources>
