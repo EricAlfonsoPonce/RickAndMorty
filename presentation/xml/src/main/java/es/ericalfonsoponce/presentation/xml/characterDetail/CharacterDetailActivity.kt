@@ -16,6 +16,9 @@ import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
+import es.ericalfonsoponce.domain.entity.character.CharacterGender
+import es.ericalfonsoponce.domain.entity.character.CharacterStatus
+import es.ericalfonsoponce.presentation.xml.R
 import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.presentation.xml.R
 import es.ericalfonsoponce.presentation.xml.components.showSimpleDialog
