@@ -1,4 +1,4 @@
-package es.ericalfonsoponce.presentation.compose.screens
+package es.ericalfonsoponce.presentation.compose.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -124,6 +124,9 @@ class CharacterDetailActivity : AppCompatActivity() {
             binding?.let { binding ->
                 Glide.with(this)
                     .load(character.image)
+                    .placeholder(R.drawable.img_placeholder)
+                    .fallback(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.imageCharacter)
 
@@ -143,7 +146,7 @@ class CharacterDetailActivity : AppCompatActivity() {
         }
 
         viewModel.error.observe(this) { error ->
-            val message = when(error){
+            val message = when (error) {
                 is AppError.NoInternet -> getString(R.string.error_no_internet)
                 is AppError.Failure -> error.msg
                 is AppError.SqlError -> getString(R.string.error_sql)

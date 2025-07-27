@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="top_bar_character_home_title">Rick and Morty</string>
+    <string name="top_bar_character_detail_title">Character Detail</string>
+
+    <!-- Character -->
+    <string name="character_hint_name">Name</string>
+    <string name="character_hint_origin">Origin</string>
+    <string name="character_hint_location">Location</string>
+    <string name="character_hint_status">Status</string>
+    <string name="character_hint_specie">Specie</string>
+
+    <string name="character_save_changes_button">Save Changes</string>
+</resources>

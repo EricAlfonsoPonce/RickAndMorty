@@ -66,6 +66,9 @@ class CharacterAdapter(
                 this.character = character
                 Glide.with(root)
                     .load(character.image)
+                    .placeholder(R.drawable.img_placeholder)
+                    .fallback(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
                     .into(imageCharacter)
 
                 textStatusPlace.text = getCharacterStatusColored(character)
