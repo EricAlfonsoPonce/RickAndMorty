@@ -69,7 +69,6 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     implementation (libs.androidx.lifecycle.runtime.testing)
 
-
     // Modules
     implementation(project(":domain"))
     implementation(project(":di"))
