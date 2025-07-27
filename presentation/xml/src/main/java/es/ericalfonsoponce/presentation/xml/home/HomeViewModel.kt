@@ -37,8 +37,7 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { pairResult ->
                     hasNextPage = pairResult.first
                     if (pairResult.first) page++
-                    _characters.value =
-                        _characters.value?.toMutableList()?.plus(pairResult.second)
+                    _characters.value = _characters.value?.toMutableList()?.plus(pairResult.second)
                 }
                 .onFailure { throwable ->
                     _error.value = throwable as AppError

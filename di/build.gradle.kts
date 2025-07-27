@@ -48,6 +48,11 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
+    // Room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.room.androidx.compiler)
+
     // Logging Interceptor
     implementation(libs.logging.interceptor)
 

@@ -1,6 +1,7 @@
-package es.ericalfonsoponce.data.handler
+package es.ericalfonsoponce.data.handler.remote
 
 import es.ericalfonsoponce.data.dataSource.handler.remote.dto.NetworkError
+import es.ericalfonsoponce.data.handler.ErrorHandler
 import es.ericalfonsoponce.domain.entity.error.AppError
 
 class ErrorRemoteHandlerImpl: ErrorHandler {
