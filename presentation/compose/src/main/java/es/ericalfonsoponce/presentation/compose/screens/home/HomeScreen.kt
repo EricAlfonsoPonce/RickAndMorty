@@ -45,9 +45,12 @@ import coil.compose.AsyncImage
 import es.ericalfonsoponce.domain.entity.character.CharacterGender
 import es.ericalfonsoponce.domain.entity.character.CharacterShow
 import es.ericalfonsoponce.domain.entity.character.CharacterStatus
+import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.presentation.compose.R
+import es.ericalfonsoponce.presentation.compose.components.CustomAlertDialog
 import es.ericalfonsoponce.presentation.compose.components.debounceClickable
 import es.ericalfonsoponce.presentation.compose.components.debounceOnClick
+import es.ericalfonsoponce.presentation.compose.components.shimmerEffect
 import es.ericalfonsoponce.presentation.compose.theme.aliveColor
 import es.ericalfonsoponce.presentation.compose.theme.appBackgroundColor
 import es.ericalfonsoponce.presentation.compose.theme.deadColor
@@ -55,23 +58,56 @@ import es.ericalfonsoponce.presentation.compose.theme.unknownColor
 
 @Composable
 fun HomeScreen(
-
+    character: CharacterShow?,
+    navigateToCharacterDetail: (CharacterShow) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    if (uiState.error != null) {
+        val message = when (uiState.error) {
+            is AppError.NoInternet -> stringResource(R.string.error_no_internet)
+            is AppError.Failure -> (uiState.error as AppError.Failure).msg
+            is AppError.SqlError -> stringResource(R.string.error_sql)
+            else -> stringResource(R.string.default_dialog_message)
+        }
 
+        CustomAlertDialog(
+            title = stringResource(R.string.default_dialog_title),
+            message = message,
+            buttonText = stringResource(R.string.default_dialog_button),
+            onDismiss = viewModel::resetError
+        )
+    }
 
+    LaunchedEffect(character) {
+        if (character != null) {
+            viewModel.onCharacterUpdated(character)
+        }
+    }
+
+    HomeScreenContent(
+        uiState = uiState,
+        onAction = { action ->
+            when (action) {
+                is HomeScreenActions.DeleteCharacter -> viewModel::deleteCharacter
+            }
+        },
+        navigateToCharacterDetail = navigateToCharacterDetail
+    )
 }
 
 @Composable
 private fun HomeScreenContent(
-    uiState: HomeScreenUiState
+    uiState: HomeScreenUiState,
+    onAction: (HomeScreenActions) -> Unit,
+    navigateToCharacterDetail: (CharacterShow) -> Unit
 ) {
     Scaffold(
         topBar = {
             HomeTopBar()
-        }) { innerPadding ->
+        }
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -82,14 +118,15 @@ private fun HomeScreenContent(
             items(1) {
                 Spacer(modifier = Modifier.height(8.dp))
             }
+            val shimmerEffect = Modifier.shimmerEffect(uiState.isLoading)
 
-            if (uiState.characters.isNotEmpty()) {
-                items(uiState.characters) { character ->
-                    ItemCharacter(
-                        character = character, onClickItem = {})
-                }
-            } else {
-
+            items(uiState.characters) { character ->
+                ItemCharacter(
+                    modifier = shimmerEffect,
+                    character = character,
+                    onClickItem = navigateToCharacterDetail,
+                    onDeleteClick = { onAction(HomeScreenActions.DeleteCharacter(character)) }
+                )
             }
         }
     }
@@ -117,10 +154,14 @@ private fun HomeTopBar() {
 
 @Composable
 private fun ItemCharacter(
-    character: CharacterShow, onClickItem: () -> Unit
+    modifier: Modifier = Modifier,
+    character: CharacterShow,
+    onClickItem: (CharacterShow) -> Unit,
+    onDeleteClick: (CharacterShow) -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(8.dp), border = null, modifier = Modifier
+        shape = RoundedCornerShape(8.dp), border = null,
+        modifier = modifier
             .fillMaxWidth()
             .shadow(
                 elevation = 6.dp,
@@ -129,7 +170,7 @@ private fun ItemCharacter(
                 ambientColor = Color.Black,
                 spotColor = Color.LightGray
             )
-            .debounceClickable { onClickItem() }) {
+            .debounceClickable { onClickItem(character) }) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -187,7 +228,9 @@ private fun ItemCharacter(
             }
 
             IconButton(
-                onClick = debounceOnClick { },
+                onClick = debounceOnClick {
+                    onDeleteClick(character)
+                },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
@@ -223,6 +266,8 @@ private fun HomeScreenPreview() {
     )
 
     HomeScreenContent(
-        uiState = uiState
+        uiState = uiState,
+        onAction = {},
+        navigateToCharacterDetail = {}
     )
 }

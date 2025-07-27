@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import es.ericalfonsoponce.presentation.compose.main.MainComposeActivity
 import es.ericalfonsoponce.presentation.xml.home.HomeActivity
 import es.ericalfonsoponce.rickandmorty.databinding.ActivityMainBinding
 
@@ -18,15 +19,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-
         initListeners()
     }
 
-    private fun initListeners(){
+    private fun initListeners() {
         binding?.cardCompose?.setOnClickListener {
-            setContent {
-
-            }
+            val intent = Intent(this, MainComposeActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         binding?.cardXml?.setOnClickListener {

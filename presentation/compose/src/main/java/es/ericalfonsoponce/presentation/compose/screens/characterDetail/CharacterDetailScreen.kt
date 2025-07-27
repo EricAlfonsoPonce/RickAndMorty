@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,9 @@ import coil.compose.AsyncImage
 import es.ericalfonsoponce.domain.entity.character.CharacterGender
 import es.ericalfonsoponce.domain.entity.character.CharacterShow
 import es.ericalfonsoponce.domain.entity.character.CharacterStatus
+import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.presentation.compose.R
+import es.ericalfonsoponce.presentation.compose.components.CustomAlertDialog
 import es.ericalfonsoponce.presentation.compose.components.CustomOutLinedTextField
 import es.ericalfonsoponce.presentation.compose.components.debounceOnClick
 import es.ericalfonsoponce.presentation.compose.theme.appBackgroundColor
@@ -62,15 +65,55 @@ import es.ericalfonsoponce.presentation.compose.theme.saveButtonColor
 
 @Composable
 fun CharacterDetailScreen(
+    navigateBack: () -> Unit,
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
-
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.navEventsFlow.collect { event ->
+            when (event) {
+                is NavEvent.NavigateToHomeScreen -> navigateBack()
+            }
+        }
+    }
+
+    if (uiState.error != null) {
+        val message = when(uiState.error){
+            is AppError.NoInternet -> stringResource(R.string.error_no_internet)
+            is AppError.Failure -> (uiState.error as AppError.Failure).msg
+            is AppError.SqlError -> stringResource(R.string.error_sql)
+            else -> stringResource(R.string.default_dialog_message)
+        }
+
+        CustomAlertDialog(
+            title = stringResource(R.string.default_dialog_title),
+            message = message,
+            buttonText = stringResource(R.string.default_dialog_button),
+            onDismiss = viewModel::resetError
+        )
+    }
+
+    CharacterDetailScreenContent(
+        uiState = uiState,
+        onAction = { action ->
+            when (action) {
+                is CharacterDetailScreenActions.SaveChanges -> viewModel::saveChanges
+                is CharacterDetailScreenActions.OnSetCharacterGender-> viewModel::setCharacterGender
+                is CharacterDetailScreenActions.OnSetCharacterName -> viewModel::setCharacterName
+                is CharacterDetailScreenActions.OnSetCharacterSpecie -> viewModel::setCharacterSpecie
+                is CharacterDetailScreenActions.OnSetCharacterStatus -> viewModel::setCharacterStatus
+            }
+        },
+        navigateBack = navigateBack,
+    )
+
 }
 
 @Composable
 private fun CharacterDetailScreenContent(
     uiState: CharacterDetailScreenUiState,
+    onAction: (CharacterDetailScreenActions) -> Unit,
     navigateBack: () -> Unit
 ) {
     Scaffold(
@@ -109,18 +152,22 @@ private fun CharacterDetailScreenContent(
             CustomOutLinedTextField(
                 value = uiState.character?.name.orEmpty(),
                 label = stringResource(R.string.character_hint_name),
-                onValueChange = {}
+                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterName) }
             )
 
-            GenderDropDown()
+            GenderDropDown(
+                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterGender) }
+            )
 
             CustomOutLinedTextField(
                 value = uiState.character?.origin.orEmpty(),
-                label = stringResource(R.string.character_hint_origin),
-                onValueChange = {}
+                label = stringResource(R.string.character_hint_specie),
+                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterSpecie) }
             )
 
-            StatusDropDown()
+            StatusDropDown(
+                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterStatus) }
+            )
 
             CustomOutLinedTextField(
                 value = uiState.character?.origin.orEmpty(),
@@ -174,7 +221,9 @@ private fun CharacterDetailTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GenderDropDown() {
+private fun GenderDropDown(
+    onItemSelected: (CharacterGender) -> Unit
+) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
 
     val dropDownOptions = CharacterGender.entries
@@ -243,6 +292,7 @@ private fun GenderDropDown() {
                         },
                         onClick = debounceOnClick {
                             selectedOption.value = option.value
+                            onItemSelected(option)
                             isDropdownExpanded = false
                         }
                     )
@@ -254,7 +304,9 @@ private fun GenderDropDown() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StatusDropDown() {
+private fun StatusDropDown(
+    onItemSelected: (CharacterStatus) -> Unit
+) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
 
     val dropDownOptions = CharacterStatus.entries
@@ -323,6 +375,7 @@ private fun StatusDropDown() {
                         },
                         onClick = debounceOnClick {
                             selectedOption.value = option.value
+                            onItemSelected(option)
                             isDropdownExpanded = false
                         }
                     )
@@ -372,6 +425,7 @@ private fun CharacterDetailScreenPreview() {
 
     CharacterDetailScreenContent(
         uiState = CharacterDetailScreenUiState(character = characterShow),
+        onAction = {},
         navigateBack = {}
     )
 }

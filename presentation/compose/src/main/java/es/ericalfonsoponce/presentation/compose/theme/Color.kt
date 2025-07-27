@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 val appBackgroundColor = Color(0xFF1C1B1F)
 
 // Shimmer
-val shimmerColor = Color(0xFFE9E9E9)
+val shimmerColor = Color(0xFFF0F0F0)
 
 // Loader
 val loaderColor = Color(0xFF42A5F5)

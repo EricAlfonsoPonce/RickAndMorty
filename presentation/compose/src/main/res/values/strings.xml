@@ -15,5 +15,9 @@
     <string name="default_dialog_title">Error!</string>
     <string name="default_dialog_message">Something went wrong</string>
 
+    <!-- Errors -->
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_sql">SQL Error</string>
+
     <string name="character_save_changes_button">Save Changes</string>
 </resources>

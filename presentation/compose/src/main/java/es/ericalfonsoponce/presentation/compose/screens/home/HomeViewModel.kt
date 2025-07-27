@@ -19,6 +19,10 @@ data class HomeScreenUiState(
     val error: AppError? = null
 )
 
+sealed class HomeScreenActions {
+    class DeleteCharacter(val character: CharacterShow): HomeScreenActions()
+}
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val characterUseCase: CharacterUseCase
@@ -27,6 +31,10 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
     private var page: Int = 1
     private var hasNextPage: Boolean = true
+
+    init {
+        getCharacters()
+    }
 
     fun getCharacters(isLoadingPagination: Boolean = false) {
         if (isLoadingPagination.not()) setIsLoading(true) else setIsLoadingPagination(true)
@@ -42,7 +50,6 @@ class HomeViewModel @Inject constructor(
                     }
                 }
                 .onFailure { throwable ->
-
                     _uiState.update { it.copy(error = throwable as AppError) }
                 }
             if (isLoadingPagination.not()) setIsLoading(false) else setIsLoadingPagination(false)
@@ -76,6 +83,28 @@ class HomeViewModel @Inject constructor(
             )
         }
         getCharacters()
+    }
+
+    fun onCharacterUpdated(character: CharacterShow){
+        _uiState.update {
+            it.copy(
+                characters = it.characters.toMutableList().onEach { characterShow ->
+                    if(characterShow.id == character.id) {
+                        character
+                    } else {
+                        characterShow
+                    }
+                }
+            )
+        }
+    }
+
+    fun resetError(){
+        _uiState.update {
+            it.copy(
+                error = null
+            )
+        }
     }
 
     private fun setIsLoading(isLoading: Boolean) {

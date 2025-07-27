@@ -9,6 +9,7 @@ import es.ericalfonsoponce.domain.entity.character.CharacterShow
 import es.ericalfonsoponce.domain.entity.character.CharacterStatus
 import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.domain.useCase.character.CharacterUseCase
+import es.ericalfonsoponce.presentation.compose.navigation.Screens
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,15 @@ data class CharacterDetailScreenUiState(
 )
 
 sealed class NavEvent {
-    object NavigateToHomeScreen : NavEvent()
+    class NavigateToHomeScreen(val character: CharacterShow) : NavEvent()
+}
+
+sealed class CharacterDetailScreenActions {
+    object OnSetCharacterStatus : CharacterDetailScreenActions()
+    object OnSetCharacterGender : CharacterDetailScreenActions()
+    object OnSetCharacterName : CharacterDetailScreenActions()
+    object OnSetCharacterSpecie : CharacterDetailScreenActions()
+    object SaveChanges : CharacterDetailScreenActions()
 }
 
 @HiltViewModel
@@ -38,23 +47,35 @@ class CharacterDetailViewModel @Inject constructor(
     val navEventsFlow = _navEventChannel.receiveAsFlow()
 
     init {
-
+        _uiState.update {
+            it.copy(
+                character = Screens.CharacterDetailScreen.from(savedStateHandle).character
+            )
+        }
     }
 
-    fun setCharacterStatus(status: CharacterStatus){
+    fun setCharacterStatus(status: CharacterStatus) {
         _uiState.update { it.copy(character = it.character?.copy(status = status)) }
     }
 
-    fun setCharacterGender(gender: CharacterGender){
+    fun setCharacterGender(gender: CharacterGender) {
         _uiState.update { it.copy(character = it.character?.copy(gender = gender)) }
     }
 
-    fun setCharacterName(name: String){
+    fun setCharacterName(name: String) {
         _uiState.update { it.copy(character = it.character?.copy(name = name)) }
     }
 
-    fun setCharacterSpecie(specie: String){
+    fun setCharacterSpecie(specie: String) {
         _uiState.update { it.copy(character = it.character?.copy(species = specie)) }
+    }
+
+    fun resetError() {
+        _uiState.update {
+            it.copy(
+                error = null
+            )
+        }
     }
 
     fun saveChanges() {
@@ -62,7 +83,7 @@ class CharacterDetailViewModel @Inject constructor(
             viewModelScope.launch {
                 characterUseCase.updateCharacter(character)
                     .onSuccess {
-
+                        _navEventChannel.send(NavEvent.NavigateToHomeScreen(character))
                     }
                     .onFailure { throwable ->
                         _uiState.update {
