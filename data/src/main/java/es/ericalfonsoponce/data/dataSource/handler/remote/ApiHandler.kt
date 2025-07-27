@@ -23,11 +23,11 @@ class ApiHandler @Inject constructor() {
                 throw parseError(response.errorBody())
             }
         } catch (exception: Exception) {
-            Result.failure(handler(exception))
+            Result.failure(handle(exception))
         }
     }
 
-    private fun handler(error: Exception): Exception {
+    private fun handle(error: Exception): Exception {
         return when (error) {
             is HttpException -> {
                 parseError(error.response()?.errorBody())

@@ -23,7 +23,9 @@ object DataBaseModule {
             context,
             CharacterDataBase::class.java,
             "RickAndMortyDatabase.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(true)
+            .build()
 
     @Provides
     @Singleton

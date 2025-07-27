@@ -28,7 +28,7 @@ class CharacterRepositoryImpl @Inject constructor(
             }
 
         characterResponse.results.forEach {
-            localDataSource.insertCharacter(it.toLocal())
+            localDataSource.insertCharacter(it.toDbo())
                 .onFailure { throwable ->
                     val error = if (throwable is Exception) errorLocalHandler.handle(throwable) else AppError.Unknown
                     return Result.failure(error)
@@ -75,25 +75,12 @@ class CharacterRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun CharacterDto.toLocal(): CharacterDbo = CharacterDbo(
+    private fun CharacterDto.toDbo(): CharacterDbo = CharacterDbo(
         id = id,
         name = name,
         status = status,
         species = species,
         gender = gender,
-        origin = origin.name,
-        location = location.name,
-        image = image
-    )
-
-    private fun CharacterDto.toDomain(): CharacterShow = CharacterShow(
-        id = id,
-        name = name,
-        status = CharacterStatus.entries.firstOrNull { it.value == status }
-            ?: CharacterStatus.UNKNOWN,
-        species = species,
-        gender = CharacterGender.entries.firstOrNull { it.value == gender }
-            ?: CharacterGender.UNKNOWN,
         origin = origin.name,
         location = location.name,
         image = image

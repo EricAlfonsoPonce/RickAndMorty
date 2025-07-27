@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,11 +40,11 @@ class CharacterDetailActivity : AppCompatActivity() {
 
     private fun initSpinners(){
         binding?.let { binding ->
-            val genderAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, genders)
+            val genderAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, viewModel.genders)
             genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerGender.adapter = genderAdapter
 
-            val statusAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statuses)
+            val statusAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, viewModel.statuses)
             genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerStatus.adapter = statusAdapter
         }
@@ -52,22 +53,26 @@ class CharacterDetailActivity : AppCompatActivity() {
     private fun initListeners(){
         binding?.spinnerGender?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                viewModel.character.value?.gender = genders[position]
+                viewModel.updateCharacterGender(position)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         binding?.spinnerStatus?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                viewModel.character.value?.status = statuses[position]
+                viewModel.updateCharacterStatus(position)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
-            }
+        binding?.editNameCharacter?.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateCharacterName(text.toString())
+        }
+
+        binding?.editSpecieCharacter?.doOnTextChanged { text, _, _, _ ->
+            viewModel.updateCharacterSpecie(text.toString())
         }
     }
 
@@ -79,8 +84,8 @@ class CharacterDetailActivity : AppCompatActivity() {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.imageCharacter)
 
-                binding.spinnerGender.setSelection(genders.indexOf(character.gender))
-                binding.spinnerStatus.setSelection(statuses.indexOf(character.status))
+                binding.spinnerGender.setSelection(viewModel.getCharacterGenderIndex(character.gender))
+                binding.spinnerStatus.setSelection(viewModel.getCharacterStatusIndex(character.status))
             }
         }
 
@@ -88,7 +93,7 @@ class CharacterDetailActivity : AppCompatActivity() {
             if(isSuccess){
                 setResult(
                     RESULT_OK,
-                    Intent().putExtra("Character", viewModel.character.value)
+                    Intent().putExtra(INTENT_CHARACTER, viewModel.character.value)
                 )
                 finish()
             }
@@ -101,7 +106,6 @@ class CharacterDetailActivity : AppCompatActivity() {
     }
 
     companion object{
-        val genders = listOf(CharacterGender.FEMALE, CharacterGender.MALE, CharacterGender.GENDERLESS, CharacterGender.UNKNOWN)
-        val statuses = listOf(CharacterStatus.ALIVE, CharacterStatus.DEAD, CharacterStatus.UNKNOWN)
+        const val INTENT_CHARACTER = "CHARACTER"
     }
 }

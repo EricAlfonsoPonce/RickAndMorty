@@ -4,10 +4,10 @@ import java.io.Serializable
 
 data class CharacterShow(
     val id: Int,
-    var name: String,
-    var status: CharacterStatus,
+    val name: String,
+    val status: CharacterStatus,
     val species: String,
-    var gender: CharacterGender,
+    val gender: CharacterGender,
     val origin: String,
     val location: String,
     val image: String

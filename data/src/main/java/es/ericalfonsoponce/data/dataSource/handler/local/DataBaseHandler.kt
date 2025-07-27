@@ -11,11 +11,11 @@ class DataBaseHandler @Inject constructor() {
         return try {
             Result.success(call())
         } catch (exception: Exception) {
-            Result.failure(handler(exception))
+            Result.failure(handle(exception))
         }
     }
 
-    private fun handler(error: Exception): Exception {
+    private fun handle(error: Exception): Exception {
         return when (error) {
             is SQLiteConstraintException -> DataBaseError.Constraint
             is SQLiteException -> DataBaseError.Failure

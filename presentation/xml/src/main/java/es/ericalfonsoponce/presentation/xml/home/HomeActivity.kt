@@ -26,8 +26,8 @@ class HomeActivity : AppCompatActivity() {
                 result.data?.extras?.let { extras ->
                     val characterUpdated =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                            extras.getSerializable("Character", CharacterShow::class.java)
-                        else extras.getSerializable("Character") as? CharacterShow
+                            extras.getSerializable(CharacterDetailActivity.INTENT_CHARACTER, CharacterShow::class.java)
+                        else extras.getSerializable(CharacterDetailActivity.INTENT_CHARACTER) as? CharacterShow
 
                     val currentList = characterAdapter.currentList
                     val position = currentList.indexOfFirst { it?.id == characterUpdated?.id }
@@ -59,7 +59,7 @@ class HomeActivity : AppCompatActivity() {
             onClick = {
                 launcher.launch(
                     Intent(this, CharacterDetailActivity::class.java)
-                        .putExtra("Character", it)
+                        .putExtra(CharacterDetailActivity.INTENT_CHARACTER, it)
                 )
             },
             onDelete = {
