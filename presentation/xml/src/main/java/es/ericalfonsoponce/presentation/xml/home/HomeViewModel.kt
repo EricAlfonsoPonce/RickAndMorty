@@ -66,6 +66,7 @@ class HomeViewModel @Inject constructor(
 
     fun refreshData() {
         page = 1
+        hasNextPage = true
         _characters.value = emptyList()
         getCharacters()
     }

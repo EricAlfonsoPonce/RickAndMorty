@@ -83,7 +83,8 @@ fun AppNavHost(
 
         composable<Screens.CharacterDetailScreen>(typeMap = Screens.CharacterDetailScreen.typeMap){
             CharacterDetailScreen(
-                navigateBack = navigateBack
+                navigateBack = navigateBack,
+                navigateToHomeScreen = navigateToHomeScreen
             )
         }
     }

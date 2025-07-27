@@ -66,6 +66,7 @@ import es.ericalfonsoponce.presentation.compose.theme.saveButtonColor
 @Composable
 fun CharacterDetailScreen(
     navigateBack: () -> Unit,
+    navigateToHomeScreen: (CharacterShow) -> Unit,
     viewModel: CharacterDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -73,7 +74,7 @@ fun CharacterDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.navEventsFlow.collect { event ->
             when (event) {
-                is NavEvent.NavigateToHomeScreen -> navigateBack()
+                is NavEvent.NavigateToHomeScreen -> navigateToHomeScreen(event.character)
             }
         }
     }
@@ -98,11 +99,11 @@ fun CharacterDetailScreen(
         uiState = uiState,
         onAction = { action ->
             when (action) {
-                is CharacterDetailScreenActions.SaveChanges -> viewModel::saveChanges
-                is CharacterDetailScreenActions.OnSetCharacterGender-> viewModel::setCharacterGender
-                is CharacterDetailScreenActions.OnSetCharacterName -> viewModel::setCharacterName
-                is CharacterDetailScreenActions.OnSetCharacterSpecie -> viewModel::setCharacterSpecie
-                is CharacterDetailScreenActions.OnSetCharacterStatus -> viewModel::setCharacterStatus
+                is CharacterDetailScreenActions.SaveChanges -> viewModel.saveChanges()
+                is CharacterDetailScreenActions.OnSetCharacterGender-> viewModel.setCharacterGender(action.gender)
+                is CharacterDetailScreenActions.OnSetCharacterName -> viewModel.setCharacterName(action.name)
+                is CharacterDetailScreenActions.OnSetCharacterSpecie -> viewModel.setCharacterSpecie(action.specie)
+                is CharacterDetailScreenActions.OnSetCharacterStatus -> viewModel.setCharacterStatus(action.status)
             }
         },
         navigateBack = navigateBack,
@@ -124,7 +125,9 @@ private fun CharacterDetailScreenContent(
         },
         bottomBar = {
             CharacterDetailBottomBar(
-                saveChanges = {}
+                saveChanges = {
+                    onAction(CharacterDetailScreenActions.SaveChanges)
+                }
             )
         }
     ) { innerPadding ->
@@ -152,21 +155,23 @@ private fun CharacterDetailScreenContent(
             CustomOutLinedTextField(
                 value = uiState.character?.name.orEmpty(),
                 label = stringResource(R.string.character_hint_name),
-                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterName) }
+                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterName(it)) }
             )
 
             GenderDropDown(
-                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterGender) }
+                characterGender = uiState.character?.gender ?: CharacterGender.UNKNOWN,
+                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterGender(it)) }
             )
 
             CustomOutLinedTextField(
                 value = uiState.character?.origin.orEmpty(),
                 label = stringResource(R.string.character_hint_specie),
-                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterSpecie) }
+                onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterSpecie(it)) }
             )
 
             StatusDropDown(
-                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterStatus) }
+                characterStatus = uiState.character?.status ?: CharacterStatus.UNKNOWN,
+                onItemSelected = { onAction(CharacterDetailScreenActions.OnSetCharacterStatus(it)) }
             )
 
             CustomOutLinedTextField(
@@ -222,6 +227,7 @@ private fun CharacterDetailTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GenderDropDown(
+    characterGender: CharacterGender,
     onItemSelected: (CharacterGender) -> Unit
 ) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -229,7 +235,7 @@ private fun GenderDropDown(
     val dropDownOptions = CharacterGender.entries
 
     val selectedOption = remember {
-        mutableStateOf(dropDownOptions[0].value)
+        mutableStateOf(characterGender.value)
     }
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -305,6 +311,7 @@ private fun GenderDropDown(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatusDropDown(
+    characterStatus: CharacterStatus,
     onItemSelected: (CharacterStatus) -> Unit
 ) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -312,7 +319,7 @@ private fun StatusDropDown(
     val dropDownOptions = CharacterStatus.entries
 
     val selectedOption = remember {
-        mutableStateOf(dropDownOptions[0].value)
+        mutableStateOf(characterStatus.value)
     }
 
     Box(modifier = Modifier.fillMaxWidth()) {

@@ -10,6 +10,7 @@ import es.ericalfonsoponce.domain.entity.character.CharacterStatus
 import es.ericalfonsoponce.domain.entity.error.AppError
 import es.ericalfonsoponce.domain.useCase.character.CharacterUseCase
 import es.ericalfonsoponce.presentation.compose.navigation.Screens
+import es.ericalfonsoponce.presentation.compose.screens.home.HomeScreenActions
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,10 +29,10 @@ sealed class NavEvent {
 }
 
 sealed class CharacterDetailScreenActions {
-    object OnSetCharacterStatus : CharacterDetailScreenActions()
-    object OnSetCharacterGender : CharacterDetailScreenActions()
-    object OnSetCharacterName : CharacterDetailScreenActions()
-    object OnSetCharacterSpecie : CharacterDetailScreenActions()
+    class OnSetCharacterStatus(val status: CharacterStatus) : CharacterDetailScreenActions()
+    class OnSetCharacterGender(val gender: CharacterGender) : CharacterDetailScreenActions()
+    class OnSetCharacterName(val name: String) : CharacterDetailScreenActions()
+    class OnSetCharacterSpecie(val specie: String) : CharacterDetailScreenActions()
     object SaveChanges : CharacterDetailScreenActions()
 }
 

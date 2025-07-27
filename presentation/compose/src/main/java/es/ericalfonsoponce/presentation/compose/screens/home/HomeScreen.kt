@@ -2,33 +2,38 @@ package es.ericalfonsoponce.presentation.compose.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -60,7 +65,7 @@ import es.ericalfonsoponce.presentation.compose.theme.unknownColor
 fun HomeScreen(
     character: CharacterShow?,
     navigateToCharacterDetail: (CharacterShow) -> Unit,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -90,43 +95,92 @@ fun HomeScreen(
         uiState = uiState,
         onAction = { action ->
             when (action) {
-                is HomeScreenActions.DeleteCharacter -> viewModel::deleteCharacter
+                is HomeScreenActions.DeleteCharacter -> viewModel.deleteCharacter(character = action.character)
+                is HomeScreenActions.OnLoadMoreCharacters -> viewModel.loadNextPage()
+                is HomeScreenActions.OnRefresh -> viewModel.refreshData()
             }
         },
         navigateToCharacterDetail = navigateToCharacterDetail
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenContent(
     uiState: HomeScreenUiState,
     onAction: (HomeScreenActions) -> Unit,
-    navigateToCharacterDetail: (CharacterShow) -> Unit
+    navigateToCharacterDetail: (CharacterShow) -> Unit,
 ) {
     Scaffold(
+        modifier = Modifier
+            .background(color = appBackgroundColor)
+            .navigationBarsPadding(),
         topBar = {
             HomeTopBar()
-        }
+        },
+        containerColor = appBackgroundColor
     ) { innerPadding ->
-        LazyColumn(
+        PullToRefreshBox(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(color = appBackgroundColor),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            items(1) {
-                Spacer(modifier = Modifier.height(8.dp))
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = {
+                onAction(HomeScreenActions.OnRefresh)
             }
-            val shimmerEffect = Modifier.shimmerEffect(uiState.isLoading)
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            items(uiState.characters) { character ->
-                ItemCharacter(
-                    modifier = shimmerEffect,
-                    character = character,
-                    onClickItem = navigateToCharacterDetail,
-                    onDeleteClick = { onAction(HomeScreenActions.DeleteCharacter(character)) }
-                )
+                if (uiState.isLoading) {
+                    repeat(7) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .shimmerEffect(true)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        itemsIndexed(uiState.characters) { index, character ->
+                            ItemCharacter(
+                                modifier = Modifier.animateItem(),
+                                character = character,
+                                onClickItem = navigateToCharacterDetail,
+                                onDeleteClick = {
+                                    onAction(
+                                        HomeScreenActions.DeleteCharacter(
+                                            character
+                                        )
+                                    )
+                                }
+                            )
+                            if (index == uiState.characters.lastIndex) {
+                                LaunchedEffect(Unit) {
+                                    onAction(HomeScreenActions.OnLoadMoreCharacters)
+                                }
+                            }
+                        }
+                        if (uiState.isLoadingPagination) {
+                            item {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .padding(vertical = 16.dp),
+                                    color = Color.Green
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -140,13 +194,10 @@ private fun HomeTopBar() {
             title = {
                 Text(text = stringResource(R.string.top_bar_character_home_title))
             },
-            colors = TopAppBarColors(
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = appBackgroundColor,
-                navigationIconContentColor = Color.Transparent,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent
-            ),
+                titleContentColor = Color.White
+            )
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, Color.White)
     }
@@ -157,7 +208,7 @@ private fun ItemCharacter(
     modifier: Modifier = Modifier,
     character: CharacterShow,
     onClickItem: (CharacterShow) -> Unit,
-    onDeleteClick: (CharacterShow) -> Unit
+    onDeleteClick: (CharacterShow) -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(8.dp), border = null,
@@ -170,7 +221,8 @@ private fun ItemCharacter(
                 ambientColor = Color.Black,
                 spotColor = Color.LightGray
             )
-            .debounceClickable { onClickItem(character) }) {
+            .debounceClickable { onClickItem(character) }
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -197,9 +249,13 @@ private fun ItemCharacter(
                         painter = when (character.gender) {
                             CharacterGender.MALE -> painterResource(R.drawable.ic_gender_male)
                             CharacterGender.FEMALE -> painterResource(R.drawable.ic_gender_female)
-                            CharacterGender.GENDERLESS -> painterResource(R.drawable.ic_gender_undefined)
-                            CharacterGender.UNKNOWN -> painterResource(R.drawable.ic_gender_undefined)
-                        }, contentDescription = null
+                            else -> painterResource(R.drawable.ic_gender_undefined)
+                        }, contentDescription = null,
+                        tint = when (character.gender) {
+                            CharacterGender.MALE -> Color.Blue
+                            CharacterGender.FEMALE -> Color.Red
+                            else -> Color.Black
+                        }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -262,7 +318,8 @@ private fun HomeScreenPreview() {
     val uiState = HomeScreenUiState(
         characters = listOf(
             characterShow, characterShow, characterShow, characterShow, characterShow
-        )
+        ),
+        isLoading = true
     )
 
     HomeScreenContent(

@@ -11,16 +11,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 data class HomeScreenUiState(
     val characters: List<CharacterShow> = emptyList(),
     val isLoading: Boolean = false,
     val isLoadingPagination: Boolean = false,
+    val isRefreshing: Boolean = false,
     val error: AppError? = null
 )
 
 sealed class HomeScreenActions {
     class DeleteCharacter(val character: CharacterShow): HomeScreenActions()
+    object OnLoadMoreCharacters: HomeScreenActions()
+    object OnRefresh: HomeScreenActions()
 }
 
 @HiltViewModel
@@ -33,11 +35,15 @@ class HomeViewModel @Inject constructor(
     private var hasNextPage: Boolean = true
 
     init {
-        getCharacters()
+        loadCharacters()
     }
 
-    fun getCharacters(isLoadingPagination: Boolean = false) {
-        if (isLoadingPagination.not()) setIsLoading(true) else setIsLoadingPagination(true)
+    fun loadCharacters(isRefreshing: Boolean = false, isLoadingPagination: Boolean = false) {
+        when {
+            isRefreshing -> setIsRefreshing(true)
+            isLoadingPagination -> setIsLoadingPagination(true)
+            else -> setIsLoading(true)
+        }
         viewModelScope.launch {
             characterUseCase.getCharactersByPage(page = page)
                 .onSuccess { pairResult ->
@@ -52,7 +58,11 @@ class HomeViewModel @Inject constructor(
                 .onFailure { throwable ->
                     _uiState.update { it.copy(error = throwable as AppError) }
                 }
-            if (isLoadingPagination.not()) setIsLoading(false) else setIsLoadingPagination(false)
+            when {
+                isRefreshing -> setIsRefreshing(false)
+                isLoadingPagination -> setIsLoadingPagination(false)
+                else -> setIsLoading(false)
+            }
         }
     }
 
@@ -72,23 +82,25 @@ class HomeViewModel @Inject constructor(
     }
 
     fun loadNextPage() {
-        if (hasNextPage) getCharacters(true)
+        if (hasNextPage) loadCharacters(isLoadingPagination = true)
     }
 
     fun refreshData() {
         page = 1
+        hasNextPage = true
         _uiState.update {
             it.copy(
+                isRefreshing = true,
                 characters = emptyList()
             )
         }
-        getCharacters()
+        loadCharacters(isRefreshing = true)
     }
 
     fun onCharacterUpdated(character: CharacterShow){
         _uiState.update {
             it.copy(
-                characters = it.characters.toMutableList().onEach { characterShow ->
+                characters = it.characters.toMutableList().map { characterShow ->
                     if(characterShow.id == character.id) {
                         character
                     } else {
@@ -110,7 +122,9 @@ class HomeViewModel @Inject constructor(
     private fun setIsLoading(isLoading: Boolean) {
         _uiState.update {
             it.copy(
-                isLoading = isLoading
+                isLoading = isLoading,
+                isRefreshing = false,
+                isLoadingPagination = false
             )
         }
     }
@@ -119,6 +133,15 @@ class HomeViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 isLoadingPagination = isLoading
+            )
+        }
+    }
+
+    private fun setIsRefreshing(isRefreshing: Boolean) {
+        _uiState.update {
+            it.copy(
+                isRefreshing = isRefreshing,
+                isLoading = isRefreshing
             )
         }
     }

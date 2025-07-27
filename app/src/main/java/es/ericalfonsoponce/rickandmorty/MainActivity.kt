@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import es.ericalfonsoponce.presentation.compose.main.MainComposeActivity
 import es.ericalfonsoponce.presentation.xml.home.HomeActivity
 import es.ericalfonsoponce.rickandmorty.databinding.ActivityMainBinding
@@ -17,6 +18,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
+        binding?.let {
+            WindowInsetsControllerCompat(window, it.root).apply {
+                isAppearanceLightStatusBars = false
+                isAppearanceLightNavigationBars = false
+            }
+        }
         setContentView(binding?.root)
 
         initListeners()
