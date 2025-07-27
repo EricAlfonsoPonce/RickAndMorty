@@ -80,6 +80,10 @@ class CharacterAdapter(
                     )
                     .into(imageGender)
 
+                imageDelete.setOnClickListener {
+                    onDelete(character)
+                }
+
                 root.setOnClickListener {
                     onClick(character)
                 }

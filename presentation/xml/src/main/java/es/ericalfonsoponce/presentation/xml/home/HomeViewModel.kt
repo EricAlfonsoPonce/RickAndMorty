@@ -46,6 +46,20 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteCharacter(character: CharacterShow){
+        viewModelScope.launch {
+            characterUseCase.removeCharacter(character)
+                .onSuccess {
+                    _characters.value = _characters.value?.toMutableList()?.apply {
+                        remove(character)
+                    }
+                }
+                .onFailure { throwable ->
+                    _error.value = throwable as AppError
+                }
+        }
+    }
+
     fun loadNextPage() {
         if (hasNextPage) getCharacters(true)
     }

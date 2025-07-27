@@ -1,6 +1,8 @@
 package es.ericalfonsoponce.presentation.xml.character
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -35,6 +37,7 @@ class CharacterDetailActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         initSpinners()
+        initListeners()
         initObservers()
         viewModel.checkIntent(intent.extras)
     }
@@ -51,6 +54,28 @@ class CharacterDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun initListeners(){
+        binding?.spinnerGender?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                viewModel.character.value?.gender = genders[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
+
+        binding?.spinnerStatus?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                viewModel.character.value?.status = statuses[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
+    }
+
     private fun initObservers(){
         viewModel.character.observe(this) { character ->
             binding?.let { binding ->
@@ -61,6 +86,16 @@ class CharacterDetailActivity : AppCompatActivity() {
 
                 binding.spinnerGender.setSelection(genders.indexOf(character.gender))
                 binding.spinnerStatus.setSelection(statuses.indexOf(character.status))
+            }
+        }
+
+        viewModel.characterUpdateSuccessful.observe(this){ isSuccess ->
+            if(isSuccess){
+                setResult(
+                    RESULT_OK,
+                    Intent().putExtra("Character", viewModel.character.value)
+                )
+                finish()
             }
         }
     }

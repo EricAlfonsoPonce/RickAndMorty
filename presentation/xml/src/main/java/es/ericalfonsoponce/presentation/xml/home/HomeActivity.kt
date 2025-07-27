@@ -63,7 +63,7 @@ class HomeActivity : AppCompatActivity() {
                 )
             },
             onDelete = {
-
+                viewModel.deleteCharacter(it)
             },
             loadNextPage = {
                 viewModel.loadNextPage()

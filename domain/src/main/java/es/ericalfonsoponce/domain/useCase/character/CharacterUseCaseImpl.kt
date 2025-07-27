@@ -11,11 +11,11 @@ class CharacterUseCaseImpl @Inject constructor(
         return characterRepository.getCharactersByPage(page)
     }
 
-    override suspend fun updateCharacter(character: CharacterShow) {
-        characterRepository.updateCharacter(character)
+    override suspend fun updateCharacter(character: CharacterShow): Result<Unit> {
+        return characterRepository.updateCharacter(character)
     }
 
-    override suspend fun removeCharacter(character: CharacterShow) {
-        characterRepository.removeCharacter(character)
+    override suspend fun removeCharacter(character: CharacterShow): Result<Unit> {
+        return characterRepository.removeCharacter(character)
     }
 }
