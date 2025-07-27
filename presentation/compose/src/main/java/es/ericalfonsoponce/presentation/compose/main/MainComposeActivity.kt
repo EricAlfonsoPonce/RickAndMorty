@@ -27,8 +27,8 @@ class MainComposeActivity : AppCompatActivity() {
                 val window = (context as Activity).window
 
                 WindowInsetsControllerCompat(window, view).apply {
-                    isAppearanceLightStatusBars = true
-                    isAppearanceLightNavigationBars = true
+                    isAppearanceLightStatusBars = false
+                    isAppearanceLightNavigationBars = false
                 }
             }
 

@@ -33,13 +33,11 @@ class MainActivity : AppCompatActivity() {
         binding?.cardCompose?.setOnClickListener {
             val intent = Intent(this, MainComposeActivity::class.java)
             startActivity(intent)
-            finish()
         }
 
         binding?.cardXml?.setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
-            finish()
         }
     }
 }
