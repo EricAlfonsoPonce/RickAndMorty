@@ -17,5 +17,4 @@ object UseCaseModule {
     fun providesCharacterUseCase(
         characterRepository: CharacterRepository
     ): CharacterUseCase = CharacterUseCaseImpl(characterRepository = characterRepository)
-
 }

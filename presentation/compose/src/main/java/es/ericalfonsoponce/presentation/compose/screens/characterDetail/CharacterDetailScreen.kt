@@ -164,7 +164,7 @@ private fun CharacterDetailScreenContent(
             )
 
             CustomOutLinedTextField(
-                value = uiState.character?.origin.orEmpty(),
+                value = uiState.character?.species.orEmpty(),
                 label = stringResource(R.string.character_hint_specie),
                 onValueChange = { onAction(CharacterDetailScreenActions.OnSetCharacterSpecie(it)) }
             )
